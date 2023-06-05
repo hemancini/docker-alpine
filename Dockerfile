@@ -18,7 +18,7 @@ RUN echo -e "\nsource /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-
 RUN echo "source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" >>~/.zshrc
 
 # change theme to fwalch
-sed -i '' 's/ZSH_THEME=.*/ZSH_THEME="fwalch"/g' ~/.zshrc
+RUN sed -i '' 's/ZSH_THEME=.*/ZSH_THEME="fwalch"/g' ~/.zshrc
 
 WORKDIR /root
 ENTRYPOINT /bin/zsh

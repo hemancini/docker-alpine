@@ -5,6 +5,10 @@ on:
     branches:
       - "main"
 
+env:
+  REGISTRY: hemancini/alpine
+  TAG: latest
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -22,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: hemancini/alpine:latest
+          tags: ${{ env.REGISTRY }}/${{ env.TAG }}

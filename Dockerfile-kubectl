@@ -24,9 +24,16 @@ RUN echo "source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.
 # change zsh theme to fwalch
 RUN sed -i 's/ZSH_THEME=.*/ZSH_THEME="fwalch"/g' ~/.zshrc
 
-# install zsh-sytem-information plugin
+# add zsh-sytem-information plugin
 RUN git clone https://github.com/hemancini/zsh-sytem-information.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sytem-information
 RUN sed -i 's/plugins=(/plugins=(zsh-sytem-information /g' ~/.zshrc
+
+# add zsh-kubectl-select-kubeconfig plugin
+git clone https://github.com/hemancini/zsh-kubectl-select-kubeconfig.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-select-kubeconfig
+sed -i 's/plugins=(/plugins=(zsh-kubectl-select-kubeconfig /g' ~/.zshrc
+
+# add aws plugin
+sed -i 's/plugins=(/plugins=(aws /g' ~/.zshrc
 
 # awscli
 RUN pip install awscli

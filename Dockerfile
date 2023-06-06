@@ -20,5 +20,9 @@ RUN echo "source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.
 # change theme to fwalch
 RUN sed -i 's/ZSH_THEME=.*/ZSH_THEME="fwalch"/g' ~/.zshrc
 
+# isntall zsh-sytem-information plugin
+RUN git clone https://github.com/hemancini/zsh-sytem-information.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sytem-information
+RUN sed -i 's/plugins=(/plugins=(zsh-sytem-information /g' ~/.zshrc
+
 WORKDIR /root
 ENTRYPOINT /bin/zsh

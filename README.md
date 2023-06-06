@@ -2,10 +2,10 @@
 
 ```bash
 # simple zsh
-docker run -it hemancini/alpine
+docker run -it --rm hemancini/alpine:latest
 
 # zsh + kubectl + aws 
-docker run -it hemancini/alpine-kubectl
+docker run -it --rm hemancini/alpine-kubectl
 ```
 
 ```bash

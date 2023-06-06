@@ -18,10 +18,8 @@ RUN apk add --no-cache \
 
 # zsh
 RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
-RUN echo -e '
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-' >>~/.zshrc
+RUN echo -e "\nsource /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >>~/.zshrc
+RUN echo "source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" >>~/.zshrc
 
 # change zsh theme to fwalch
 RUN sed -i 's/ZSH_THEME=.*/ZSH_THEME="fwalch"/g' ~/.zshrc
@@ -37,31 +35,25 @@ RUN sed -i 's/plugins=(/plugins=(zsh-kubectl-select-kubeconfig /g' ~/.zshrc
 # add aws plugin
 RUN sed -i 's/plugins=(/plugins=(aws /g' ~/.zshrc
 
-# configure PROMPT
-RUN echo -e '
-RPROMPT='%{$FG[208]%}$(aws_prompt_info)%{$reset_color%} $(kubectl_prompt)'
-' >>~/.zshrc
+# add aws env vars
+RUN echo -e '\nexport AWS_PAGER=""\nexport AWS_DEFAULT_REGION="us-east-1"\nexport AWS_CONFIG_FILE="~/.aws/credentials"' >> ~/.zshrc
 
 # awscli
 RUN pip install awscli
 
-# add aws env vars
-RUN echo -e '
-export AWS_PAGER=""
-export AWS_DEFAULT_REGION="us-east-1"
-export AWS_CONFIG_FILE="~/.aws/credentials"
-' >>~/.zshrc
-
 # kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl &&
-    chmod +x ./kubectl &&
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
+    chmod +x ./kubectl && \
     mv ./kubectl /usr/local/bin/kubectl
 
 # helm
-RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar xvz &&
-    mv linux-amd64/helm /usr/bin/helm &&
-    chmod +x /usr/bin/helm &&
+RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar xvz && \
+    mv linux-amd64/helm /usr/bin/helm && \
+    chmod +x /usr/bin/helm && \
     rm -rf linux-amd64
+
+# configure PROMPT
+RUN echo -e '\nRPROMPT=\'%{$FG[208]%}$(aws_prompt_info)%{$reset_color%} $(kubectl_prompt)\'' >>~/.zshrc
 
 WORKDIR /root
 ENTRYPOINT /bin/zsh

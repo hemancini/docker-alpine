@@ -2,6 +2,8 @@ FROM alpine:3.15.4
 
 ENV HELM_VERSION="3.5.4"
 ENV KUBECTL_VERSION="1.21.0"
+ENV GLIBC_VERSION="2.31-r0"
+ENV AWSCLI_VERSION="2.11.25"
 
 RUN apk add --no-cache \
     git \
@@ -23,28 +25,20 @@ RUN echo "source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.
 
 # change zsh theme to fwalch
 RUN sed -i 's/ZSH_THEME=.*/ZSH_THEME="fwalch"/g' ~/.zshrc
+RUN sed -i 's/# export LANG=en_US.UTF-8/export LANG=en_US.UTF-8/g' ~/.zshrc
 
 # add zsh-sytem-information plugin
 RUN git clone https://github.com/hemancini/zsh-sytem-information.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sytem-information
 RUN sed -i 's/plugins=(/plugins=(zsh-sytem-information /g' ~/.zshrc
 
-# add zsh-kubectl-select-kubeconfig plugin
-RUN git clone https://github.com/hemancini/zsh-kubectl-select-kubeconfig.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-select-kubeconfig
-RUN sed -i 's/plugins=(/plugins=(zsh-kubectl-select-kubeconfig /g' ~/.zshrc
-
-# add aws plugin
-RUN sed -i 's/plugins=(/plugins=(aws /g' ~/.zshrc
-
-# awscli
-RUN pip install awscli
-
-# add aws env vars
-RUN echo -e '\nexport AWS_PAGER=""\nexport AWS_DEFAULT_REGION="us-east-1"\nexport AWS_CONFIG_FILE="~/.aws/credentials"' >> ~/.zshrc
-
 # kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
     mv ./kubectl /usr/local/bin/kubectl
+
+# add zsh-kubectl-select-kubeconfig plugin
+RUN git clone https://github.com/hemancini/zsh-kubectl-select-kubeconfig.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-select-kubeconfig
+RUN sed -i 's/plugins=(/plugins=(zsh-kubectl-select-kubeconfig /g' ~/.zshrc
 
 # helm
 RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar xvz && \
@@ -52,8 +46,40 @@ RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar
     chmod +x /usr/bin/helm && \
     rm -rf linux-amd64
 
+# install glibc compatibility for the AWS CLI v2
+RUN apk --no-cache add \
+    binutils && \
+    curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub && \
+    curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk && \
+    curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk && \
+    apk add --no-cache \
+        glibc-${GLIBC_VERSION}.apk \
+        glibc-bin-${GLIBC_VERSION}.apk && \
+    curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip -o awscliv2.zip && \
+    unzip awscliv2.zip && \
+    aws/install && \
+    rm -rf \
+        aws \
+        awscliv2.zip \
+        /usr/local/aws-cli/v2/*/dist/aws_completer \
+        /usr/local/aws-cli/v2/*/dist/awscli/data/ac.index \
+        /usr/local/aws-cli/v2/*/dist/awscli/examples && \
+    apk --no-cache del \
+        binutils && \
+    rm glibc-${GLIBC_VERSION}.apk && \
+    rm glibc-bin-${GLIBC_VERSION}.apk
+
+# add aws plugin
+RUN sed -i 's/plugins=(/plugins=(aws /g' ~/.zshrc
+
+# add aws env vars
+RUN echo -e '\nexport AWS_PAGER=""\nexport AWS_DEFAULT_REGION="us-east-1"\nexport AWS_CONFIG_FILE="~/.aws/credentials"' >> ~/.zshrc
+
 # configure zsh PROMPT
 RUN echo -e "\nRPROMPT='%{\$FG[208]%}\$(aws_prompt_info)%{\$reset_color%} \$(kubectl_prompt)'" >>~/.zshrc
+
+# clear cache
+RUN rm -rf /var/cache/apk/*
 
 WORKDIR /root
 ENTRYPOINT /bin/zsh

@@ -29,11 +29,11 @@ RUN git clone https://github.com/hemancini/zsh-sytem-information.git ${ZSH_CUSTO
 RUN sed -i 's/plugins=(/plugins=(zsh-sytem-information /g' ~/.zshrc
 
 # add zsh-kubectl-select-kubeconfig plugin
-git clone https://github.com/hemancini/zsh-kubectl-select-kubeconfig.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-select-kubeconfig
-sed -i 's/plugins=(/plugins=(zsh-kubectl-select-kubeconfig /g' ~/.zshrc
+RUN git clone https://github.com/hemancini/zsh-kubectl-select-kubeconfig.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-select-kubeconfig
+RUN sed -i 's/plugins=(/plugins=(zsh-kubectl-select-kubeconfig /g' ~/.zshrc
 
 # add aws plugin
-sed -i 's/plugins=(/plugins=(aws /g' ~/.zshrc
+RUN sed -i 's/plugins=(/plugins=(aws /g' ~/.zshrc
 
 # awscli
 RUN pip install awscli

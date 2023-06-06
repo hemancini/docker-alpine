@@ -53,7 +53,7 @@ RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar
     rm -rf linux-amd64
 
 # configure PROMPT
-RUN echo -e '\nRPROMPT='%{$FG[208]%}$(aws_prompt_info)%{$reset_color%} $(kubectl_prompt)'' >>~/.zshrc
+RUN echo -e '\nRPROMPT='%{\$FG[208]%}\$(aws_prompt_info)%{\$reset_color%} \$(kubectl_prompt)'' >>~/.zshrc
 
 WORKDIR /root
 ENTRYPOINT /bin/zsh

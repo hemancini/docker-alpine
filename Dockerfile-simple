@@ -9,8 +9,7 @@ RUN apk add --no-cache \
 	jq \
 	zsh \
 	zsh-autosuggestions \
-	zsh-syntax-highlighting \
-	--repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+	zsh-syntax-highlighting
 
 # install oh-my-zsh
 RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"

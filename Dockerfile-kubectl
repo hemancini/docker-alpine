@@ -13,9 +13,8 @@ RUN apk add --no-cache \
     zsh \
     zsh-autosuggestions \
     zsh-syntax-highlighting \
-    python3=3.9.16-r0 \
-    py3-pip=20.3.4-r1 \
-    --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+    python3 \
+    py3-pip
 
 # zsh
 RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
@@ -33,14 +32,14 @@ RUN sed -i 's/plugins=(/plugins=(zsh-sytem-information /g' ~/.zshrc
 RUN pip install awscli
 
 # kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl &&
-    chmod +x ./kubectl &&
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
+    chmod +x ./kubectl && \
     mv ./kubectl /usr/local/bin/kubectl
 
 # helm
-RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar xvz &&
-    mv linux-amd64/helm /usr/bin/helm &&
-    chmod +x /usr/bin/helm &&
+RUN curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar xvz && \
+    mv linux-amd64/helm /usr/bin/helm && \
+    chmod +x /usr/bin/helm && \
     rm -rf linux-amd64
 
 WORKDIR /root

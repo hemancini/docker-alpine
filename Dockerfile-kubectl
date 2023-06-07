@@ -76,7 +76,7 @@ RUN sed -i 's/plugins=(/plugins=(aws /g' ~/.zshrc
 RUN echo -e '\nexport AWS_PAGER=""\nexport AWS_DEFAULT_REGION="us-east-1"\nexport AWS_CONFIG_FILE="~/.aws/credentials"' >> ~/.zshrc
 
 # configure zsh PROMPT
-RUN echo -e "\nRPROMPT='%{\$FG[208]%}\$(aws_prompt_info)%{\$reset_color%} \$(kubectl_prompt)'" >>~/.zshrc
+RUN echo -e "\nRPROMPT='%{\$FG[208]%}\$(aws_prompt_info)%{\$reset_color%} \$(kubectl_prompt_info)'" >>~/.zshrc
 
 # clear cache
 RUN rm -rf /var/cache/apk/*

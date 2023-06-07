@@ -5,7 +5,10 @@
 docker run -it --rm hemancini/alpine:latest
 
 # zsh + kubectl + aws 
-docker run -it --rm hemancini/alpine-kubectl
+docker run -it --rm \
+  -v "$HOME/.aws/credentials":"/root/.aws/credentials" \
+  -v "$HOME/.kubeconfigs":"/root/.kubeconfigs" \
+  hemancini/alpine-kubectl
 ```
 
 ```bash
